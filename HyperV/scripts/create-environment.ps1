@@ -167,12 +167,12 @@ else
 }
 Add-Content "$env:APPDATA\pip\pip.ini" $pip_conf_content
 
-& easy_install -U pip
-& pip install -U setuptools
-& pip install -U --pre "PyMI>=1.0.0.dev4"
-& pip install cffi
-& pip install numpy
-& pip install -U cliff==1.15.0
+Exec-EasyInstall -Upgrade pip
+Exec-PipInstall -upgrade setuptools
+Exec-PipInstall -upgrade -pre PyMI>=1.0.0.dev4
+Exec-PipInstall cffi
+Exec-PipInstall numpy
+Exec-PipInstall -upgrade cliff==1.15.0
 popd
 
 $hasPipConf = Test-Path "$env:APPDATA\pip"
@@ -201,34 +201,31 @@ function cherry_pick($commit) {
 
 ExecRetry {
     pushd C:\OpenStack\build\openstack\neutron
-    & pip install C:\OpenStack\build\openstack\neutron
+    Exec-PipInstall C:\OpenStack\build\openstack\neutron
     if ($LastExitCode) { Throw "Failed to install neutron from repo" }
     popd
 }
 
 ExecRetry {
-    pushd C:\OpenStack\build\openstack\networking-hyperv
+    Exec-PipInstall C:\OpenStack\build\openstack\networking-hyperv
     # Checks if port features are being added
     Write-Host "Doing fetch... refs/changes/28/265728/7"
     git fetch https://review.openstack.org/openstack/nova refs/changes/28/265728/7
     cherry_pick FETCH_HEAD
-    & pip install C:\OpenStack\build\openstack\networking-hyperv
+    Exec-PipInstall C:\OpenStack\build\openstack\networking-hyperv
     if ($LastExitCode) { Throw "Failed to install networking-hyperv from repo" }
-    popd
 }
 
 ExecRetry {
-    pushd C:\OpenStack\build\openstack\nova
-    & pip install C:\OpenStack\build\openstack\nova
+    Exec-PipInstall C:\OpenStack\build\openstack\nova
     if ($LastExitCode) { Throw "Failed to install nova fom repo" }
     popd
 }
 
 ExecRetry {
     pushd C:\OpenStack\build\openstack\compute-hyperv
-    & pip install C:\OpenStack\build\openstack\compute-hyperv
+    Exec-PipInstall C:\OpenStack\build\openstack\compute-hyperv
     if ($LastExitCode) { Throw "Failed to install Hyperv-Compute fom repo" }
-    popd
 }
 
 if (($branchName.ToLower().CompareTo($('stable/juno').ToLower()) -eq 0) -or ($branchName.ToLower().CompareTo($('stable/icehouse').ToLower()) -eq 0)) {
